@@ -1,0 +1,3 @@
+*.html linguist-detectable=false
+*.ipynb linguist-detectable=false
+*.png linguist-detectable=false
