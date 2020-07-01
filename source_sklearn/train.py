@@ -6,8 +6,8 @@ import pandas as pd
 
 from sklearn.externals import joblib
 
-## TODO: Import any additional libraries you need to define a model
-
+## DONE: Import any additional libraries you need to define a model
+from sklearn import svm
 
 # Provided model load function
 def model_fn(model_dir):
@@ -23,7 +23,7 @@ def model_fn(model_dir):
     return model
 
 
-## TODO: Complete the main code
+## DONE: Complete the main code
 if __name__ == '__main__':
     
     # All of the model parameters and training parameters are sent as arguments
@@ -38,7 +38,7 @@ if __name__ == '__main__':
     parser.add_argument('--model-dir', type=str, default=os.environ['SM_MODEL_DIR'])
     parser.add_argument('--data-dir', type=str, default=os.environ['SM_CHANNEL_TRAIN'])
     
-    ## TODO: Add any additional arguments that you will need to pass into your model
+    ## DONE: Add any additional arguments that you will need to pass into your model
     
     # args holds all passed-in arguments
     args = parser.parse_args()
@@ -55,12 +55,12 @@ if __name__ == '__main__':
     ## --- Your code here --- ##
     
 
-    ## TODO: Define a model 
-    model = None
+    ## DONE: Define a model 
+    model = svm.SVC()
     
     
-    ## TODO: Train the model
-    
+    ## DONE: Train the model
+    model.fit(train_x, train_y)
     
     
     ## --- End of your code  --- ##
