@@ -96,7 +96,6 @@ This was the general outline followed for this SageMaker project:
     * a. Define an SVC model
     * b. Train the model
     * c. Evaluate model performance
-5. Important: Deleting the endpoint
 
 
 
