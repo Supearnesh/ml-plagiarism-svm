@@ -86,16 +86,16 @@ This was the general outline followed for this SageMaker project:
 
 
 1. Reading and exploring the data
-        a. Understanding different types of plagiarism
+    * a. Understanding different types of plagiarism
 2. Pre-processing the data
 3. Feature engineering
-        a. Containment
-        b. Longest Common Subsequence (LCS)
-        c. Correlated features
+    * a. Containment
+    * b. Longest Common Subsequence (LCS)
+    * c. Correlated features
 4. Binary classification
-        a. Define an SVC model
-        b. Train the model
-        c. Evaluate model performance
+    * a. Define an SVC model
+    * b. Train the model
+    * c. Evaluate model performance
 5. Important: Deleting the endpoint
 
 
