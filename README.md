@@ -91,7 +91,7 @@ This was the general outline followed for this SageMaker project:
 3. Feature engineering
         a. Containment
         b. Longest Common Subsequence (LCS)
-        c. Evaluate model performance
+        c. Correlated features
 4. Binary classification
         a. Define an SVC model
         b. Train the model
@@ -275,7 +275,7 @@ The general steps in this function are as follows:
 3. The containment between an answer and source text is calculated according to the following equation
 
 
-    >$$ \frac{\sum{count(\text{ngram}_{A}) \cap count(\text{ngram}_{S})}}{\sum{count(\text{ngram}_{A})}} $$
+<img src='img/n-grams.svg' width=50% />
 
 
 4. The containment value is returned
@@ -469,7 +469,247 @@ def lcs_norm_word(answer_text, source_text):
 
 
 
-#### Part C - Evaluate model performance
+#### Part C - Correlated features
+
+
+It is important to use feature correlation across the *entire* dataset to determine which features are ***too*** **highly-correlated** with each other to include both features in a single model. For this analysis, the *entire* dataset may be used due to the small sample size.
+
+All of the features try to measure similarity between two texts. Since these features are designed to measure similarity, it is expected that they will be highly-correlated. Many classification models, for example a Naive Bayes classifier, rely on the assumption that features are *not* highly correlated; highly-correlated features may over-inflate the importance of a single feature.
+
+So, the features should be chosen based on which pairings have the lowest correlation. These correlation values range between 0 and 1; from low to high correlation, and are displayed in a [correlation matrix](https://www.displayr.com/what-is-a-correlation-matrix/), below.
+
+
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>c_1</th>
+      <th>c_2</th>
+      <th>c_3</th>
+      <th>c_4</th>
+      <th>c_5</th>
+      <th>c_6</th>
+      <th>c_7</th>
+      <th>c_8</th>
+      <th>c_9</th>
+      <th>c_10</th>
+      <th>c_11</th>
+      <th>c_12</th>
+      <th>lcs_word</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>c_1</th>
+      <td>1.00</td>
+      <td>0.94</td>
+      <td>0.90</td>
+      <td>0.89</td>
+      <td>0.88</td>
+      <td>0.87</td>
+      <td>0.87</td>
+      <td>0.87</td>
+      <td>0.86</td>
+      <td>0.86</td>
+      <td>0.86</td>
+      <td>0.86</td>
+      <td>0.97</td>
+    </tr>
+    <tr>
+      <th>c_2</th>
+      <td>0.94</td>
+      <td>1.00</td>
+      <td>0.99</td>
+      <td>0.98</td>
+      <td>0.97</td>
+      <td>0.96</td>
+      <td>0.95</td>
+      <td>0.94</td>
+      <td>0.94</td>
+      <td>0.93</td>
+      <td>0.92</td>
+      <td>0.92</td>
+      <td>0.98</td>
+    </tr>
+    <tr>
+      <th>c_3</th>
+      <td>0.90</td>
+      <td>0.99</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>0.99</td>
+      <td>0.98</td>
+      <td>0.98</td>
+      <td>0.97</td>
+      <td>0.96</td>
+      <td>0.95</td>
+      <td>0.95</td>
+      <td>0.94</td>
+      <td>0.97</td>
+    </tr>
+    <tr>
+      <th>c_4</th>
+      <td>0.89</td>
+      <td>0.98</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>0.99</td>
+      <td>0.99</td>
+      <td>0.98</td>
+      <td>0.98</td>
+      <td>0.97</td>
+      <td>0.97</td>
+      <td>0.96</td>
+      <td>0.95</td>
+    </tr>
+    <tr>
+      <th>c_5</th>
+      <td>0.88</td>
+      <td>0.97</td>
+      <td>0.99</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>0.99</td>
+      <td>0.99</td>
+      <td>0.98</td>
+      <td>0.98</td>
+      <td>0.97</td>
+      <td>0.95</td>
+    </tr>
+    <tr>
+      <th>c_6</th>
+      <td>0.87</td>
+      <td>0.96</td>
+      <td>0.98</td>
+      <td>0.99</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>0.99</td>
+      <td>0.99</td>
+      <td>0.99</td>
+      <td>0.98</td>
+      <td>0.94</td>
+    </tr>
+    <tr>
+      <th>c_7</th>
+      <td>0.87</td>
+      <td>0.95</td>
+      <td>0.98</td>
+      <td>0.99</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>0.99</td>
+      <td>0.99</td>
+      <td>0.93</td>
+    </tr>
+    <tr>
+      <th>c_8</th>
+      <td>0.87</td>
+      <td>0.94</td>
+      <td>0.97</td>
+      <td>0.98</td>
+      <td>0.99</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>0.99</td>
+      <td>0.92</td>
+    </tr>
+    <tr>
+      <th>c_9</th>
+      <td>0.86</td>
+      <td>0.94</td>
+      <td>0.96</td>
+      <td>0.98</td>
+      <td>0.99</td>
+      <td>0.99</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>0.91</td>
+    </tr>
+    <tr>
+      <th>c_10</th>
+      <td>0.86</td>
+      <td>0.93</td>
+      <td>0.95</td>
+      <td>0.97</td>
+      <td>0.98</td>
+      <td>0.99</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>0.91</td>
+    </tr>
+    <tr>
+      <th>c_11</th>
+      <td>0.86</td>
+      <td>0.92</td>
+      <td>0.95</td>
+      <td>0.97</td>
+      <td>0.98</td>
+      <td>0.99</td>
+      <td>0.99</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>0.90</td>
+    </tr>
+    <tr>
+      <th>c_12</th>
+      <td>0.86</td>
+      <td>0.92</td>
+      <td>0.94</td>
+      <td>0.96</td>
+      <td>0.97</td>
+      <td>0.98</td>
+      <td>0.99</td>
+      <td>0.99</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>1.00</td>
+      <td>0.90</td>
+    </tr>
+    <tr>
+      <th>lcs_word</th>
+      <td>0.97</td>
+      <td>0.98</td>
+      <td>0.97</td>
+      <td>0.95</td>
+      <td>0.95</td>
+      <td>0.94</td>
+      <td>0.93</td>
+      <td>0.92</td>
+      <td>0.91</td>
+      <td>0.91</td>
+      <td>0.90</td>
+      <td>0.90</td>
+      <td>1.00</td>
+    </tr>
+  </tbody>
+</table>
+</div>
 
 
 
@@ -477,9 +717,107 @@ def lcs_norm_word(answer_text, source_text):
 ### Step 4 - Binary classification
 
 
+It's now time to define and train a model, but it is even more important to consider which type of model to use for a given problem. For a binary classification task, one can choose to go one of three routes:
+* Use a built-in classification algorithm, like LinearLearner
+* Define a custom Scikit-learn classifier, a comparison of models can be found [here](https://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comparison.html)
+* Define a custom PyTorch neural network classifier
+
+
+Since the goal of this project is to become more familiar with Scikit-learn, an SVC model will be used.
+
 
 
 #### Part A - Define an SVC model
+
+
+To implement a custom classifier, a `train.py` script will need to completed first. The folder `source_sklearn` holds code for a custom Scikit-learn model. The directory contains a `train.py` training script.
+
+A typical training script:
+* Loads training data from a specified directory
+* Parses any training & model hyperparameters (ex. nodes in a neural network, training epochs, etc.)
+* Instantiates a model of a particular design, with any specified hyperparams
+* Trains that model 
+* Finally, saves the model so that it can be hosted/deployed, later
+
+
+```python
+# directory can be changed to: source_sklearn or source_pytorch
+!pygmentize source_sklearn/train.py
+```
+
+
+```python
+from __future__ import print_function
+
+import argparse
+import os
+import pandas as pd
+
+from sklearn.externals import joblib
+
+## DONE: Import any additional libraries you need to define a model
+from sklearn import svm
+
+# Provided model load function
+def model_fn(model_dir):
+    """Load model from the model_dir. This is the same model that is saved
+    in the main if statement.
+    """
+    print("Loading model.")
+    
+    # load using joblib
+    model = joblib.load(os.path.join(model_dir, "model.joblib"))
+    print("Done loading model.")
+    
+    return model
+
+
+## DONE: Complete the main code
+if __name__ == '__main__':
+    
+    # All of the model parameters and training parameters are sent as arguments
+    # when this script is executed, during a training job
+    
+    # Here we set up an argument parser to easily access the parameters
+    parser = argparse.ArgumentParser()
+
+    # SageMaker parameters, like the directories for training data and saving models; set automatically
+    # Do not need to change
+    parser.add_argument('--output-data-dir', type=str, default=os.environ['SM_OUTPUT_DATA_DIR'])
+    parser.add_argument('--model-dir', type=str, default=os.environ['SM_MODEL_DIR'])
+    parser.add_argument('--data-dir', type=str, default=os.environ['SM_CHANNEL_TRAINING'])
+    
+    ## DONE: Add any additional arguments that you will need to pass into your model
+    
+    # args holds all passed-in arguments
+    args = parser.parse_args()
+
+    # Read in csv training file
+    training_dir = args.data_dir
+    train_data = pd.read_csv(os.path.join(training_dir, "train.csv"), header=None, names=None)
+
+    # Labels are in the first column
+    train_y = train_data.iloc[:,0]
+    train_x = train_data.iloc[:,1:]
+    
+    
+    ## --- Your code here --- ##
+    
+
+    ## DONE: Define a model 
+    model = svm.SVC()
+    
+    
+    ## DONE: Train the model
+    model.fit(train_x, train_y)
+    
+    
+    ## --- End of your code  --- ##
+    
+
+    # Save the trained model
+    joblib.dump(model, os.path.join(args.model_dir, "model.joblib"))
+```
 
 
 
@@ -487,9 +825,141 @@ def lcs_norm_word(answer_text, source_text):
 #### Part B - Train the model
 
 
+When a custom model is constructed in SageMaker, an entry point must be specified. This is the Python file which will be executed when the model is trained, the `train.py` function specified above. To run a custom training script in SageMaker, an estimator must be constructed, and the appropriate constructor arguments must be filled in:
+
+
+* **entry_point**: The path to the Python script SageMaker runs for training and prediction
+* **source_dir**: The path to the training script directory `source_sklearn` OR `source_pytorch`
+* **role**: Role ARN, which was specified, above
+* **train_instance_count**: The number of training instances (should be left at 1)
+* **train_instance_type**: The type of SageMaker instance for training (Note: Because Scikit-learn does not natively support GPU training, Sagemaker Scikit-learn does not currently support training on GPU instance types)
+* **sagemaker_session**: The session used to train on Sagemaker
+* **hyperparameters** (optional): A dictionary `{'name':value, ..}` passed to the train function as hyperparameters
+
+
+```python
+# import SKLearn estimator
+from sagemaker.sklearn.estimator import SKLearn
+
+# initialize estimator
+svm_estimator = SKLearn(entry_point="train.py",
+                        source_dir="source_sklearn",
+                        role=role,
+                        train_instance_count=1,
+                        train_instance_type='ml.c4.xlarge')
+```
+
+
+The estimator must be trained on the training data stored in S3. This should create a training job that can be monitored in the SageMaker console.
+
+
+```python
+%%time
+
+# Train your estimator on S3 training data
+svm_estimator.fit({'training': input_data})
+```
+
+    2020-07-01 02:51:01 Starting - Starting the training job
+    2020-07-01 02:51:05 Starting - Launching requested ML instances
+    2020-07-01 02:52:50 Starting - Preparing the instances for training
+    2020-07-01 02:53:46 Downloading - Downloading input data
+    2020-07-01 02:54:17 Training - Downloading the training image
+    2020-07-01 02:54:49 Uploading - Uploading generated training model
+    2020-07-01 02:54:49 Completed - Training job completed
+    Training seconds: 63
+    Billable seconds: 63
+    CPU times: user 568 ms, sys: 14 ms, total: 582 ms
+    Wall time: 4min 12s
+
+
+After training, the model can be deployed to create a `predictor`.
+
+
+To deploy a trained model, `<model>.deploy`, which takes in two arguments, can be used:
+* **initial_instance_count**: The number of deployed instances (1)
+* **instance_type**: The type of SageMaker instance for deployment
+
+
+```python
+%%time
+
+# uncomment, if needed
+# from sagemaker.pytorch import PyTorchModel
+
+# deploy your model to create a predictor
+svm_predictor = svm_estimator.deploy(initial_instance_count = 1, instance_type = 'ml.t2.medium')
+```
+
+    ---------------!CPU times: user 240 ms, sys: 24.3 ms, total: 265 ms
+    Wall time: 7min 33s
+
+
 
 
 #### Part C - Evaluate model performance
+
+
+Once the model is deployed, it can be evaluated against test data to see how it performs.
+
+
+The cell below reads in the test data, assuming it is stored locally in `data_dir` and named `test.csv`. The labels and features are extracted from the `.csv` file.
+
+
+```python
+import os
+
+# read in test data, assuming it is stored locally
+test_data = pd.read_csv(os.path.join(data_dir, "test.csv"), header=None, names=None)
+
+# labels are in the first column
+test_y = test_data.iloc[:,0]
+test_x = test_data.iloc[:,1:]
+```
+
+
+The deployed `predictor` can be used to generate predicted, class labels for the test data. By comparing those to the *true* labels, `test_y`, the accuracy can be calculated as a value between 0 and 1.0; this indicates the fraction of test data that the model classified correctly. [Sklearn.metrics](https://scikit-learn.org/stable/modules/classes.html#module-sklearn.metrics) can be used for this calculation.
+
+
+```python
+# First: generate predicted, class labels
+test_y_preds = svm_predictor.predict(test_x)
+
+
+# test that your model generates the correct number of labels
+assert len(test_y_preds)==len(test_y), 'Unexpected number of predictions.'
+print('Test passed!')
+```
+
+    Test passed!
+
+
+
+```python
+from sklearn.metrics import accuracy_score
+
+# Second: calculate the test accuracy
+accuracy = accuracy_score(test_y, test_y_preds)
+print(accuracy)
+
+
+## print out the array of predicted and true labels, if you want
+print('\nPredicted class labels: ')
+print(test_y_preds)
+print('\nTrue class labels: ')
+print(test_y.values)
+```
+
+    0.96
+    
+    Predicted class labels: 
+    [1 1 1 1 1 1 0 0 0 0 0 0 0 1 1 1 1 1 0 1 0 1 1 0 0]
+    
+    True class labels: 
+    [1 1 1 1 1 1 0 0 0 0 0 0 1 1 1 1 1 1 0 1 0 1 1 0 0]
+
+
+The model produced zero false positives and one false negative, resulting in an accuracy score of 96%. This high score is likely due to a small dataset and clear distinctions between positive and negative plagiarism samples.
 
 
 
