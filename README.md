@@ -6,23 +6,23 @@
 ## Table Of Contents
 
 
-- [Introduction](#introduction)
-- [Setup Instructions](#setup-instructions)
-  * [Log in to the AWS console and create a notebook instance](#log-in-to-the-aws-console-and-create-a-notebook-instance)
-  * [Use git to clone the repository into the notebook instance](#use-git-to-clone-the-repository-into-the-notebook-instance)
-- [Machine Learning Pipeline](#machine-learning-pipeline)
-  * [Step 1 - Loading and exploring the data](#step-1---loading-and-exploring-the-data)
-    + [Part A - Calculating the percentage of fraudulent data](#part-a---calculating-the-percentage-of-fraudulent-data)
-  * [Step 2 - Splitting data into training and test sets](#step-2---splitting-data-into-training-and-test-sets)
-  * [Step 3 - Binary classification](#step-3---binary-classification)
-    + [Part A - Define a LinearLearner model](#part-a---define-a-linearlearner-model)
-    + [Part B - Train the model](#part-b---train-the-model)
-    + [Part C - Evaluate model performance](#part-c---evaluate-model-performance)
-  * [Step 4 - Making improvements to the model](#step-4---making-improvements-to-the-model)
-    + [Part A - Tune for higher recall](#part-a---tune-for-higher-recall)
-    + [Part B - Manage class imbalance](#part-b---manage-class-imbalance)
-    + [Part C - Tune for higher precision](#part-c---tune-for-higher-precision)
-  * [Important - Deleting the endpoint](#important---deleting-the-endpoint)
+  - [Introduction](#introduction)
+  - [Setup Instructions](#setup-instructions)
+    * [Log in to the AWS console and create a notebook instance](#log-in-to-the-aws-console-and-create-a-notebook-instance)
+    * [Use git to clone the repository into the notebook instance](#use-git-to-clone-the-repository-into-the-notebook-instance)
+  - [Machine Learning Pipeline](#machine-learning-pipeline)
+    * [Step 1 - Reading and exploring the data](#step-1---reading-and-exploring-the-data)
+      + [Part A - Understanding different types of plagiarism](#part-a---understanding-different-types-of-plagiarism)
+    * [Step 2 - Pre-processing the data](#step-2---pre-processing-the-data)
+    * [Step 3 - Feature engineering](#step-3---feature-engineering)
+      + [Part A - Containment](#part-a---containment)
+      + [Part B - Longest Common Subsequence (LCS)](#part-b---longest-common-subsequence--lcs-)
+      + [Part C - Correlated features](#part-c---correlated-features)
+    * [Step 4 - Binary classification](#step-4---binary-classification)
+      + [Part A - Define an SVC model](#part-a---define-an-svc-model)
+      + [Part B - Train the model](#part-b---train-the-model)
+      + [Part C - Evaluate model performance](#part-c---evaluate-model-performance)
+  - [Important - Deleting the endpoint](#important---deleting-the-endpoint)
 
 
 
@@ -964,7 +964,7 @@ The model produced zero false positives and one false negative, resulting in an 
 
 
 
-### Important - Deleting the endpoint
+## Important - Deleting the endpoint
 
 
 Always remember to shut down the model endpoint if it is no longer being used. AWS charges for the duration that an endpoint is left running, so if it is left on then there could be an unexpectedly large AWS bill.
