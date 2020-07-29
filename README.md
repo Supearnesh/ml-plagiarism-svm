@@ -1,4 +1,4 @@
-# Binary Classification of Plagiarized Text using Support Vector Machine (SVM)
+# Binary Classification of Plagiarized Text using Support Vector Machine
 
 
 
