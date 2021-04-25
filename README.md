@@ -16,7 +16,7 @@
     * [Step 2 - Pre-processing the data](#step-2---pre-processing-the-data)
     * [Step 3 - Feature engineering](#step-3---feature-engineering)
       + [Part A - Containment](#part-a---containment)
-      + [Part B - Longest Common Subsequence (LCS)](#part-b---longest-common-subsequence--lcs-)
+      + [Part B - Longest Common Subsequence (LCS)](#part-b---longest-common-subsequence-lcs)
       + [Part C - Correlated features](#part-c---correlated-features)
     * [Step 4 - Binary classification](#step-4---binary-classification)
       + [Part A - Define an SVC model](#part-a---define-an-svc-model)
